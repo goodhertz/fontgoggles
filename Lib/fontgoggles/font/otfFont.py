@@ -1,5 +1,6 @@
 import io
 from fontTools.ttLib import TTFont
+from fontTools.pens.recordingPen import RecordingPen
 from .baseFont import BaseFont
 from .glyphDrawing import GlyphDrawing
 from ..compile.compilerPool import compileTTXToBytes
@@ -10,16 +11,27 @@ from ..misc.properties import cachedProperty
 
 class _OTFBaseFont(BaseFont):
 
-    def _getGlyphDrawing(self, glyphName, colorLayers):
+    def _getGlyphDrawing(self, glyphName, colorLayers, cocoa=True):
         if colorLayers and "COLR" in self.ttFont:
             colorLayers = self.ttFont["COLR"].ColorLayers
             layers = colorLayers.get(glyphName)
             if layers is not None:
-                drawingLayers = [(self.ftFont.getOutlinePath(layer.name), layer.colorID)
-                                 for layer in layers]
+                drawingLayers = []
+                for layer in layers:
+                    if cocoa:
+                        drawingLayers.append((self.ftFont.getOutlinePath(layer.name), layer.colorID))
+                    else:
+                        rp = RecordingPen()
+                        self.ftFont.drawGlyphToPen(layer.name, rp)
+                        drawingLayers.append((rp, layer.colorID))
                 return GlyphDrawing(drawingLayers)
-        outline = self.ftFont.getOutlinePath(glyphName)
-        return GlyphDrawing([(outline, None)])
+        if cocoa:
+            outline = self.ftFont.getOutlinePath(glyphName)
+            return GlyphDrawing([(outline, None)])
+        else:
+            rp = RecordingPen()
+            self.ftFont.drawGlyphToPen(glyphName, rp)
+            return GlyphDrawing([(rp, None)])
 
     def varLocationChanged(self, varLocation):
         self.ftFont.setVarLocation(varLocation if varLocation else {})
@@ -48,7 +60,7 @@ class OTFFont(_OTFBaseFont):
             with open(fontPath, "rb") as f:
                 self.fontData = f.read()
 
-    async def load(self, outputWriter):
+    def _syncLoad(self):
         fontData = self.fontData
         f = io.BytesIO(fontData)
         self.ttFont = TTFont(f, fontNumber=self.fontNumber, lazy=True)
@@ -61,6 +73,9 @@ class OTFFont(_OTFBaseFont):
             fontData = f.getvalue()
         self.ftFont = FTFont(fontData, fontNumber=self.fontNumber, ttFont=self.ttFont)
         self.shaper = HBShape(fontData, fontNumber=self.fontNumber, ttFont=self.ttFont)
+
+    async def load(self, outputWriter):
+        self._syncLoad()
 
 
 class TTXFont(_OTFBaseFont):

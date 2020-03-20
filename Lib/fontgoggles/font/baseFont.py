@@ -131,12 +131,12 @@ class BaseFont:
 
     def getGlyphRun(self, text, *, features=None, varLocation=None,
                     direction=None, language=None, script=None,
-                    colorLayers=False):
+                    colorLayers=False, cocoa=True):
         self.setVarLocation(varLocation)
         glyphInfo = self.shaper.shape(text, features=features, varLocation=varLocation,
                                       direction=direction, language=language, script=script)
         glyphNames = (gi.name for gi in glyphInfo)
-        for glyph, glyphDrawing in zip(glyphInfo, self.getGlyphDrawings(glyphNames, colorLayers)):
+        for glyph, glyphDrawing in zip(glyphInfo, self.getGlyphDrawings(glyphNames, colorLayers, cocoa=cocoa)):
             glyph.glyphDrawing = glyphDrawing
         return glyphInfo
 
@@ -150,18 +150,18 @@ class BaseFont:
             self._currentVarLocation = varLocation
             self.varLocationChanged(varLocation)
 
-    def getGlyphDrawings(self, glyphNames, colorLayers=False):
+    def getGlyphDrawings(self, glyphNames, colorLayers=False, cocoa=True):
         for glyphName in glyphNames:
             glyphDrawing = self._glyphDrawings[colorLayers].get(glyphName)
             if glyphDrawing is None:
-                glyphDrawing = self._getGlyphDrawing(glyphName, colorLayers)
+                glyphDrawing = self._getGlyphDrawing(glyphName, colorLayers, cocoa=cocoa)
                 self._glyphDrawings[colorLayers][glyphName] = glyphDrawing
             yield glyphDrawing
 
     def _purgeCaches(self):
         self._glyphDrawings = [{}, {}]
 
-    def _getGlyphDrawing(self, glyphName, colorLayers):
+    def _getGlyphDrawing(self, glyphName, colorLayers, cocoa=True):
         raise NotImplementedError()
 
     def varLocationChanged(self, varLocation):

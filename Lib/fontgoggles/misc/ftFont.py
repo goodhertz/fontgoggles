@@ -3,7 +3,10 @@ import logging
 from fontTools.ttLib import TTFont
 from fontTools.pens.pointPen import PointToSegmentPen
 import freetype
-from ..mac.makePathFromOutline import makePathFromOutline
+try:
+    from ..mac.makePathFromOutline import makePathFromOutline
+except AssertionError:
+    pass
 
 
 class FTFont:

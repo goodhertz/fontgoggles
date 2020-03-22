@@ -102,6 +102,7 @@ class BaseFont:
             colorPalette = self.colorPalettes[colorPalettesIndex]
 
         glyphs = GlyphsRun(len(text), self.unitsPerEm, direction in ("TTB", "BTT"), colorPalette)
+        self.addGlyphDrawings(glyphs, colorLayers=colorLayers)
 
         for segmentText, segmentScript, segmentBiDiLevel, firstCluster in textInfo.segments:
             if script is not None:
@@ -130,14 +131,10 @@ class BaseFont:
         return glyphs
 
     def getGlyphRun(self, text, *, features=None, varLocation=None,
-                    direction=None, language=None, script=None,
-                    colorLayers=False, cocoa=True):
+                    direction=None, language=None, script=None):
         self.setVarLocation(varLocation)
         glyphInfo = self.shaper.shape(text, features=features, varLocation=varLocation,
                                       direction=direction, language=language, script=script)
-        glyphNames = (gi.name for gi in glyphInfo)
-        for glyph, glyphDrawing in zip(glyphInfo, self.getGlyphDrawings(glyphNames, colorLayers, cocoa=cocoa)):
-            glyph.glyphDrawing = glyphDrawing
         return glyphInfo
 
     def setVarLocation(self, varLocation):
@@ -149,6 +146,11 @@ class BaseFont:
             self._purgeCaches()
             self._currentVarLocation = varLocation
             self.varLocationChanged(varLocation)
+    
+    def addGlyphDrawings(self, glyphs, colorLayers=False, cocoa=True):
+        glyphNames = (gi.name for gi in glyphs)
+        for glyph, glyphDrawing in zip(glyphs, self.getGlyphDrawings(glyphNames, colorLayers, cocoa=cocoa)):
+            glyph.glyphDrawing = glyphDrawing
 
     def getGlyphDrawings(self, glyphNames, colorLayers=False, cocoa=True):
         for glyphName in glyphNames:

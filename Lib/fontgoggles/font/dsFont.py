@@ -11,6 +11,7 @@ from types import SimpleNamespace
 import numpy
 from fontTools.pens.basePen import BasePen
 from fontTools.pens.pointPen import PointToSegmentPen
+from fontTools.pens.recordingPen import RecordingPen
 from fontTools.designspaceLib import DesignSpaceDocument
 from fontTools.ttLib import TTFont
 from fontTools.ufoLib import UFOReader
@@ -22,7 +23,10 @@ from ..compile.compilerPool import compileUFOToPath, compileDSToBytes, CompilerE
 from ..compile.dsCompiler import getTTPaths
 from ..misc.hbShape import HBShape
 from ..misc.properties import cachedProperty
-from ..mac.makePathFromOutline import makePathFromArrays
+try:
+    from ..mac.makePathFromOutline import makePathFromArrays
+except:
+    pass
 
 
 class DesignSpaceSourceError(CompilerError):
@@ -297,7 +301,7 @@ class DSFont(BaseFont):
     def _getGlyphDrawing(self, glyphName, colorLayers):
         try:
             varGlyph = self._getVarGlyph(glyphName)
-            return GlyphDrawing([(varGlyph.getOutline(), None)])
+            return GlyphDrawing([(varGlyph.getOutline(cocoa=self.cocoa), None)])
         except Exception as e:
             print(f"Can't get outline for '{glyphName}': {e!r}", file=sys.stderr)
             return GlyphDrawing([])
@@ -440,8 +444,14 @@ class VarGlyph:
     def verticalOrigin(self):
         return self.getPoints()[-2]
 
-    def getOutline(self):
-        return makePathFromArrays(self.getPoints(), self.tags, self.contours)
+    def getOutline(self, cocoa=True):
+        if cocoa:
+            return makePathFromArrays(self.getPoints(), self.tags, self.contours)
+        else:
+            #print(self.tags)
+            rp = RecordingPen()
+            self.draw(rp)
+            return rp
 
     def draw(self, pen):
         ppen = PointToSegmentPen(pen)

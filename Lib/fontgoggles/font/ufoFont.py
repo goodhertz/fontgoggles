@@ -263,10 +263,15 @@ class NotDefGlyph:
         # For compatibility with dsFont.VarGlyph
         pass
 
-    def getOutline(self):
-        pen = CocoaPen(None)  # by now there are no more composites
-        self.draw(pen)
-        return pen.path
+    def getOutline(self, cocoa=True):
+        if cocoa:
+            pen = CocoaPen(None)  # by now there are no more composites
+            self.draw(pen)
+            return pen.path
+        else:
+            pen = RecordingPen()
+            self.draw(pen)
+            return pen
 
 
 class Glyph(GLIFGlyph):

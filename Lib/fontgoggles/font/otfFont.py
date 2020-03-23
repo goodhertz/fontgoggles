@@ -11,21 +11,21 @@ from ..misc.properties import cachedProperty
 
 class _OTFBaseFont(BaseFont):
 
-    def _getGlyphDrawing(self, glyphName, colorLayers, cocoa=True):
+    def _getGlyphDrawing(self, glyphName, colorLayers):
         if colorLayers and "COLR" in self.ttFont:
             colorLayers = self.ttFont["COLR"].ColorLayers
             layers = colorLayers.get(glyphName)
             if layers is not None:
                 drawingLayers = []
                 for layer in layers:
-                    if cocoa:
+                    if self.cocoa:
                         drawingLayers.append((self.ftFont.getOutlinePath(layer.name), layer.colorID))
                     else:
                         rp = RecordingPen()
                         self.ftFont.drawGlyphToPen(layer.name, rp)
                         drawingLayers.append((rp, layer.colorID))
                 return GlyphDrawing(drawingLayers)
-        if cocoa:
+        if self.cocoa:
             outline = self.ftFont.getOutlinePath(glyphName)
             return GlyphDrawing([(outline, None)])
         else:

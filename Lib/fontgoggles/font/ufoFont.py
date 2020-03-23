@@ -11,6 +11,7 @@ from fontTools.feaLib.ast import IncludeStatement
 from fontTools.feaLib.error import FeatureLibError
 from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.cocoaPen import CocoaPen  # TODO: factor out mac-specific code
+from fontTools.pens.recordingPen import RecordingPen
 from fontTools.ttLib import TTFont
 from fontTools.ufoLib import UFOReader, UFOFileStructure
 from fontTools.ufoLib import (FONTINFO_FILENAME, GROUPS_FILENAME, KERNING_FILENAME,
@@ -151,9 +152,14 @@ class UFOFont(BaseFont):
         return glyph
 
     def _addOutlinePathToGlyph(self, glyph):
-        pen = CocoaPen(self.glyphSet)
-        glyph.draw(pen)
-        glyph.outline = pen.path
+        if self.cocoa:
+            pen = CocoaPen(self.glyphSet)
+            glyph.draw(pen)
+            glyph.outline = pen.path
+        else:
+            pen = RecordingPen()
+            glyph.draw(pen)
+            glyph.outline = pen
 
     def _getHorizontalAdvance(self, glyphName):
         glyph = self._getGlyph(glyphName)

@@ -8,6 +8,7 @@ class BaseFont:
     def __init__(self, fontPath, fontNumber, dataProvider=None):
         self.fontPath = fontPath
         self.fontNumber = fontNumber
+        self.cocoa = False
         self.resetCache()
 
     def resetCache(self):
@@ -147,23 +148,23 @@ class BaseFont:
             self._currentVarLocation = varLocation
             self.varLocationChanged(varLocation)
     
-    def addGlyphDrawings(self, glyphs, colorLayers=False, cocoa=True):
+    def addGlyphDrawings(self, glyphs, colorLayers=False):
         glyphNames = (gi.name for gi in glyphs)
-        for glyph, glyphDrawing in zip(glyphs, self.getGlyphDrawings(glyphNames, colorLayers, cocoa=cocoa)):
+        for glyph, glyphDrawing in zip(glyphs, self.getGlyphDrawings(glyphNames, colorLayers)):
             glyph.glyphDrawing = glyphDrawing
 
-    def getGlyphDrawings(self, glyphNames, colorLayers=False, cocoa=True):
+    def getGlyphDrawings(self, glyphNames, colorLayers=False):
         for glyphName in glyphNames:
             glyphDrawing = self._glyphDrawings[colorLayers].get(glyphName)
             if glyphDrawing is None:
-                glyphDrawing = self._getGlyphDrawing(glyphName, colorLayers, cocoa=cocoa)
+                glyphDrawing = self._getGlyphDrawing(glyphName, colorLayers)
                 self._glyphDrawings[colorLayers][glyphName] = glyphDrawing
             yield glyphDrawing
 
     def _purgeCaches(self):
         self._glyphDrawings = [{}, {}]
 
-    def _getGlyphDrawing(self, glyphName, colorLayers, cocoa=True):
+    def _getGlyphDrawing(self, glyphName, colorLayers):
         raise NotImplementedError()
 
     def varLocationChanged(self, varLocation):

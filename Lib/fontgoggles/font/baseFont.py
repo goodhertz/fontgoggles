@@ -97,7 +97,7 @@ class BaseFont:
         script = textInfo.scriptOverride
         language = textInfo.languageOverride
         colorLayers = kwargs.get("colorLayers", False)
-        kwargs.pop("colorLayers")
+        kwargs.pop("colorLayers", None)
 
         if not self.colorPalettes:
             colorPalette = []

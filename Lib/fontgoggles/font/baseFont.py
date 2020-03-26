@@ -103,7 +103,7 @@ class BaseFont:
             colorPalette = self.colorPalettes[colorPalettesIndex]
 
         glyphs = GlyphsRun(len(text), self.unitsPerEm, direction in ("TTB", "BTT"), colorPalette)
-        self.addGlyphDrawings(glyphs, colorLayers=colorLayers)
+        self.addGlyphDrawings(glyphs, **kwargs)
 
         for segmentText, segmentScript, segmentBiDiLevel, firstCluster in textInfo.segments:
             if script is not None:

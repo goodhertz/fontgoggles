@@ -8,7 +8,7 @@ class BaseFont:
     def __init__(self, fontPath, fontNumber, dataProvider=None):
         self.fontPath = fontPath
         self.fontNumber = fontNumber
-        self.cocoa = False
+        self.cocoa = True
         self.resetCache()
 
     def resetCache(self):
@@ -96,6 +96,8 @@ class BaseFont:
         direction = textInfo.directionOverride
         script = textInfo.scriptOverride
         language = textInfo.languageOverride
+        colorLayers = kwargs.get("colorLayers", False)
+        kwargs.pop("colorLayers")
 
         if not self.colorPalettes:
             colorPalette = []
@@ -103,7 +105,6 @@ class BaseFont:
             colorPalette = self.colorPalettes[colorPalettesIndex]
 
         glyphs = GlyphsRun(len(text), self.unitsPerEm, direction in ("TTB", "BTT"), colorPalette)
-        self.addGlyphDrawings(glyphs, **kwargs)
 
         for segmentText, segmentScript, segmentBiDiLevel, firstCluster in textInfo.segments:
             if script is not None:
@@ -119,6 +120,7 @@ class BaseFont:
                                    script=segmentScript,
                                    language=language,
                                    **kwargs)
+            self.addGlyphDrawings(run, colorLayers=colorLayers)
             for gi in run:
                 gi.cluster += firstCluster
             glyphs.extend(run)

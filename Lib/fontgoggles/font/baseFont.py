@@ -91,7 +91,7 @@ class BaseFont:
             axes[axis.axisTag] = axisDict
         return axes
 
-    def getGlyphRunFromTextInfo(self, textInfo, colorPalettesIndex=0, **kwargs):
+    def getGlyphRunFromTextInfo(self, textInfo, colorPalettesIndex=0, addDrawings=True, **kwargs):
         text = textInfo.text
         direction = textInfo.directionOverride
         script = textInfo.scriptOverride
@@ -120,7 +120,6 @@ class BaseFont:
                                    script=segmentScript,
                                    language=language,
                                    **kwargs)
-            self.addGlyphDrawings(run, colorLayers=colorLayers)
             for gi in run:
                 gi.cluster += firstCluster
             glyphs.extend(run)
@@ -131,6 +130,9 @@ class BaseFont:
             x += gi.ax
             y += gi.ay
         glyphs.endPos = (x, y)
+
+        if addDrawings:
+            self.addGlyphDrawings(run, colorLayers=colorLayers)
         return glyphs
 
     def getGlyphRun(self, text, *, features=None, varLocation=None,

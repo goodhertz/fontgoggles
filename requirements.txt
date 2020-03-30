@@ -1,14 +1,9 @@
 setuptools>=42.0.2
 wheel>=0.33.6
-py2app==0.19  # pyup: ignore  # keep at 0.19 until ronaldoussoren/py2app#281 is fixed
-pyobjc==6.1
-corefoundationasyncio==0.0.1
-git+https://github.com/robotools/vanilla
 fonttools[woff,unicode,type1,lxml,ufo]==4.6.0
 freetype-py==2.1.0.post1
 uharfbuzz==0.8.0
 python-bidi==0.4.2
-git+git://github.com/justvanrossum/jundo.git
 ufo2ft==2.13.0
 numpy==1.18.2
 unicodedata2==13.0.0.post2

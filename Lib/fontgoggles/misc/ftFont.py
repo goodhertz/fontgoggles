@@ -5,7 +5,7 @@ from fontTools.pens.pointPen import PointToSegmentPen
 import freetype
 try:
     from ..mac.makePathFromOutline import makePathFromOutline
-except AssertionError:
+except:
     pass
 
 

@@ -1,5 +1,8 @@
 from fontTools.misc.arrayTools import unionRect
-from ..mac.drawing import rectFromNSRect
+try:
+    from ..mac.drawing import rectFromNSRect
+except:
+    pass
 from ..misc.properties import cachedProperty
 
 

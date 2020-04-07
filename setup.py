@@ -27,8 +27,11 @@ setup(
     author_email="justvanrossum@gmail.com",
     url="https://github.com/justvanrossum/fontgoggles",
     package_dir={"": "Lib"},
-    packages=find_packages("Lib"),
-    package_data={'fontgoggles.mac': ['*.dylib']},
+    packages=[
+        "fontgoggles.misc",
+        "fontgoggles.font",
+    ],
+    #package_data={'fontgoggles.mac': ['*.dylib']},
     install_requires=[
     ],
     extras_require={
@@ -38,5 +41,5 @@ setup(
     python_requires=">=3.7",
     classifiers=[
     ],
-    cmdclass={'build': build},
+    #cmdclass={'build': build},
 )

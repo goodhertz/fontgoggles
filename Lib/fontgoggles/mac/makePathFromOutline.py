@@ -7,8 +7,8 @@ try:
 except ImportError:
     # It's ok to not have numpy if makePathFromArrays() is not used.
     numpy = None
-import objc
-import Foundation
+#import objc
+#import Foundation
 
 
 FT_Vector_p = ctypes.POINTER(freetype.ft_structs.FT_Vector)

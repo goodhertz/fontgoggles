@@ -18,7 +18,7 @@ openFontsTestData = [
          'weight': 400,
          'width': 5},
         {'calt', 'ccmp', 'dnom', 'fina', 'init',
-         'liga', 'medi', 'numr',
+         'locl', 'liga', 'medi', 'numr',
          'pnum', 'rlig', 'rtlm', 'ss01', 'ss02', 'ss03',
          'ss04', 'ss05', 'ss06', 'ss07', 'ss08'},
         {'curs', 'kern', 'mark', 'mkmk', 'ss05'},
@@ -50,10 +50,10 @@ openFontsTestData = [
          'suffix': 'ttf',
          'weight': 400,
          'width': 5},
-        {'aalt', 'ccmp', 'dnom', 'fina', 'frac', 'init', 'liga',
-         'medi', 'numr', 'ordn', 'rlig', 'salt', 'sinf', 'ss01',
-         'ss02', 'ss03', 'ss04', 'ss05', 'ss06', 'subs', 'sups',
-         'zero'},
+        {'aalt', 'calt', 'ccmp', 'dnom', 'fina', 'frac', 'init',
+         'locl', 'liga', 'medi', 'numr', 'ordn', 'rlig', 'salt',
+         'sinf', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06',
+         'subs', 'sups', 'zero'},
         {'kern', 'mark', 'mkmk'},
          {'DFLT': set(), 'arab': {'URD '}, 'latn': set()},
         {},
@@ -128,7 +128,7 @@ openFontsTestData = [
          'suffix': 'ttf',
          'weight': 400,
          'width': 5},
-        {'abvs', 'blws', 'blwf'},
+        {'locl', 'blws', 'abvs', 'blwf'},
         {'kern', 'mark', 'mkmk'},
         {'mym2': {'KSW ', 'MON '}},
         {},
@@ -277,6 +277,27 @@ async def test_getGlyphRunFromTextInfo(text, expectedGlyphNames, expectedPositio
     positions = [g.pos for g in glyphs]
     assert expectedGlyphNames == glyphNames
     assert expectedPositions == positions
+
+
+@pytest.mark.asyncio
+async def test_mapGlyphsToChars():
+    text = "عربي بِّ"
+    fontPath = getFontPath('Amiri-Regular.ttf')
+    numFonts, opener, getSortInfo = getOpener(fontPath)
+    font = opener(fontPath, 0)
+    await font.load(None)
+    textInfo = TextInfo(text)
+    glyphs = font.getGlyphRunFromTextInfo(textInfo)
+    charIndices = []
+    for glyphIndex in range(len(glyphs)):
+        charIndices.append(glyphs.mapGlyphsToChars({glyphIndex}))
+    expectedCharIndices = [{7}, {6}, {5}, {4}, {3}, {2}, {1}, {0}]
+    assert expectedCharIndices == charIndices
+    glyphIndices = []
+    for charIndex in range(len(text)):
+        glyphIndices.append(glyphs.mapCharsToGlyphs({charIndex}))
+    expectedGlyphIndices = [{7}, {6}, {5}, {4}, {3}, {2}, {1}, {0}]
+    assert expectedGlyphIndices == glyphIndices
 
 
 @pytest.mark.asyncio

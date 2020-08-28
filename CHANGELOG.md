@@ -1,5 +1,43 @@
 # Changelog for FontGoggles
 
+## [1.1.16] - 2020-06-23
+
+- Show tooltip when feature description gets truncated.
+  ([Issue 94](https://github.com/justvanrossum/fontgoggles/issues/94))
+- Use HarfBuzz cluster level 1 (MONOTONE_CHARACTERS) to get a better
+  mapping between glyphs and characters. Thanks Khaled Hosny!
+  ([PR 91](https://github.com/justvanrossum/fontgoggles/pull/91))
+- Some small layout improvements. Thanks Georg Seifert!
+  ([PR 101](https://github.com/justvanrossum/fontgoggles/pull/101))
+
+## [1.1.15] - 2020-05-10
+
+- Feature tag UI: option-click reverses the cycle direction, making it
+  possible to enable/disable features with one click.
+- Use setuptools_scm for version numbers.
+- Updated internal packages
+
+## [1.1.14] - 2020-04-30
+
+- Updated uharfbuzz to 0.10.0, which updates HarfBuzz to 2.6.5
+- Fixed contextual menu for feature tags to also respond to right-click.
+
+## [1.1.13] - 2020-04-06
+
+- Fixed contextual menu to also respond to right-click.
+- Fixed feature tag list: not all available features were always shown.
+  ([Issue 85](https://github.com/justvanrossum/fontgoggles/issues/85),
+  [PR 86](https://github.com/justvanrossum/fontgoggles/issues/86))
+
+## [1.1.12] - 2020-04-03
+
+- Fixed app version info.
+
+## [1.1.11] - 2020-04-02
+
+- Fixed UFO reload issue: if kerning _and_ glyphs changed, only the glyph changes
+  would show.
+
 ## [1.1.10] - 2020-03-22
 
 - Fixed language override: for some languages the language popup menu did not

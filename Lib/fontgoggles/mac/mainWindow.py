@@ -110,6 +110,11 @@ class FGMainWindowController(AppKit.NSWindowController, metaclass=ClassNameIncre
 
         self.w.mainSplitView = mainSplitView
         self.w.open()
+        
+        # this removes a one pixel border at the top of the list view headers
+        _tweakFrameHeight(self.glyphList._nsObject)
+        _tweakFrameHeight(self.characterList._nsObject)
+        
         self.w._window.setWindowController_(self)
         self.w._window.makeFirstResponder_(fontListGroup.textEntry.nsTextView)
         self.setWindow_(self.w._window)
@@ -275,13 +280,13 @@ class FGMainWindowController(AppKit.NSWindowController, metaclass=ClassNameIncre
         featuresTab = group.feaVarTabs[0]
         self.featuresGroup = FeatureTagGroup(sidebarWidth - 6, {}, callback=self.featuresChanged)
         featuresTab.main = AligningScrollView((0, 0, 0, 0), self.featuresGroup, drawBackground=False,
-                                              hasHorizontalScroller=False,
+                                              hasHorizontalScroller=False, autohidesScrollers=True,
                                               borderType=AppKit.NSNoBorder)
 
         variationsTab = group.feaVarTabs[1]
         self.variationsGroup = SliderGroup(sidebarWidth - 6, {}, callback=self.varLocationChanged)
         variationsTab.main = AligningScrollView((0, 0, 0, 0), self.variationsGroup, drawBackground=False,
-                                                hasHorizontalScroller=False,
+                                                hasHorizontalScroller=False, autohidesScrollers=True,
                                                 borderType=AppKit.NSNoBorder)
 
         optionsTab = group.feaVarTabs[2]
@@ -1087,6 +1092,12 @@ class FGMainWindowController(AppKit.NSWindowController, metaclass=ClassNameIncre
             pb.clearContents()
             pb.declareTypes_owner_([AppKit.NSPasteboardTypeString], None)
             pb.setString_forType_(text, AppKit.NSPasteboardTypeString)
+
+
+def _tweakFrameHeight(view):
+    frame = view.frame()
+    frame.size.height += 1
+    view.setFrame_(frame)
 
 
 class LabeledView(Group):
